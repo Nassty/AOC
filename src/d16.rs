@@ -311,7 +311,8 @@ fn solve2(input: &str) -> usize {
 
 impl Day for D16 {
     fn part1(&self, input: &str) -> String {
-        solve1(input).to_string()
+        //solve1(input).to_string()
+        "".to_string()
     }
 
     fn part2(&self, input: &str) -> String {

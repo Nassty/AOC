@@ -12,6 +12,7 @@ mod d10;
 mod d11;
 mod d12;
 mod d13;
+mod d14;
 mod d15;
 mod d16;
 mod d17;
@@ -32,6 +33,7 @@ fn main() {
     app.add_day("2023-11".into(), d11::D11 {}, "inputs/11/input".into());
     app.add_day("2023-12".into(), d12::D12 {}, "inputs/12/input".into());
     app.add_day("2023-13".into(), d13::D13 {}, "inputs/13/input".into());
+    app.add_day("2023-14".into(), d14::D14 {}, "inputs/14/input".into());
 
     app.add_day("2023-15".into(), d15::D15 {}, "inputs/15/input".into());
     app.add_day("2023-16".into(), d16::D16 {}, "inputs/16/input".into());
