@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use aoc_toolkit::{Day, Direction, Grid, Vec2};
 use indicatif::{ProgressBar, ProgressStyle};
@@ -20,14 +20,16 @@ impl D14 {
             _ => panic!("Invalid tile"),
         })
     }
-    fn tilt(grid: &mut Grid<Tile>, dir: Direction) {
-        for y in (0..grid.size().1).rev() {
-            for x in (0..grid.size().0).rev() {
-                let pos = Vec2::new(x, y);
-                let target = pos.clone() + dir.delta().into();
-                if grid.get(&pos) == Some(Tile::Ball) && grid.get(&target) == Some(Tile::Air) {
-                    grid.set(&pos, Tile::Air).unwrap();
-                    grid.set(&target, Tile::Ball).unwrap();
+    fn tilt(grid: &mut Grid<Tile>, dir: &Direction) {
+        for _ in 0..grid.size().1 {
+            for y in (0..grid.size().1).rev() {
+                for x in (0..grid.size().0).rev() {
+                    let pos = Vec2::new(x, y);
+                    let target = pos.clone() + dir.delta().into();
+                    if grid.get(&pos) == Some(Tile::Ball) && grid.get(&target) == Some(Tile::Air) {
+                        grid.set(&pos, Tile::Air).unwrap();
+                        grid.set(&target, Tile::Ball).unwrap();
+                    }
                 }
             }
         }
@@ -47,7 +49,6 @@ impl D14 {
     }
     fn display(grid: &Grid<Tile>) -> String {
         let mut res = String::new();
-        let size = grid.size();
         let tiles = grid.get_tiles();
         (0..grid.size().1 as usize).for_each(|y| {
             for x in 0..grid.size().0 as usize {
@@ -67,37 +68,51 @@ impl Day for D14 {
     fn part1(&self, data: &str) -> String {
         let mut grid = Self::parse(data);
 
-        for _ in 0..grid.size().1 {
-            Self::tilt(&mut grid, Direction::Up);
-        }
+        Self::tilt(&mut grid, &Direction::Up);
         Self::calculate(&grid).to_string()
     }
 
     fn part2(&self, data: &str) -> String {
+        let total_cycles = 1_000_000_000;
+        let cycle_size = {
+            let mut cycle_size = 0;
+            let mut grid = Self::parse(data);
+            let mut hs: HashMap<md5::Digest, (usize, usize)> = HashMap::new();
+
+            for index in 0..=total_cycles {
+                let digest = md5::compute(Self::display(&grid));
+                if let Some((_, idx)) = hs.get(&digest) {
+                    cycle_size = index - idx;
+                    break;
+                } else {
+                    for dir in [
+                        Direction::Up,
+                        Direction::Left,
+                        Direction::Down,
+                        Direction::Right,
+                    ] {
+                        Self::tilt(&mut grid, &dir);
+                    }
+                    let score = Self::calculate(&grid);
+                    hs.insert(digest, (score, index));
+                }
+            }
+            cycle_size
+        };
+
+        let final_size = total_cycles % cycle_size;
         let mut grid = Self::parse(data);
-
-        //let bar = ProgressBar::new(1000000000);
-        //bar.set_style(
-        //    ProgressStyle::default_bar()
-        //        .template(
-        //            "{spinner:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] ETA: {eta_precise}",
-        //        )
-        //        .expect("asd"),
-        //);
-
-        for _ in 0..1 {
+        for _ in 0..final_size {
             for dir in [
                 Direction::Up,
-                Direction::Right,
-                Direction::Down,
                 Direction::Left,
+                Direction::Down,
+                Direction::Right,
             ] {
-                Self::tilt(&mut grid, dir);
+                Self::tilt(&mut grid, &dir);
             }
-            let d = Self::display(&grid);
-            let k = md5::compute(d.as_bytes());
         }
-        //bar.finish();
+        println!("{}", Self::display(&grid));
         Self::calculate(&grid).to_string()
     }
 }
