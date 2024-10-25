@@ -1,25 +1,11 @@
 use aoc_toolkit::App;
-mod d01;
-mod d02;
-mod d03;
-mod d04;
-mod d05;
-mod d06;
-mod d07;
-mod d08;
-mod d09;
-mod d10;
-mod d11;
-mod d12;
-mod d13;
-mod d14;
-mod d15;
-mod d16;
-mod d17;
+mod y2023;
+use y2023::*;
 
 fn main() {
     let mut app = App::new();
     let key = std::env::args().nth(1).unwrap();
+
     app.add_day("2023-01".into(), d01::D1 {}, "inputs/1/input".into());
     app.add_day("2023-02".into(), d02::D2 {}, "inputs/2/input".into());
     app.add_day("2023-03".into(), d03::D3 {}, "inputs/3/input".into());
@@ -34,9 +20,9 @@ fn main() {
     app.add_day("2023-12".into(), d12::D12 {}, "inputs/12/input".into());
     app.add_day("2023-13".into(), d13::D13 {}, "inputs/13/input".into());
     app.add_day("2023-14".into(), d14::D14 {}, "inputs/14/input".into());
-
     app.add_day("2023-15".into(), d15::D15 {}, "inputs/15/input".into());
     app.add_day("2023-16".into(), d16::D16 {}, "inputs/16/input".into());
     app.add_day("2023-17".into(), d17::D17 {}, "inputs/17/input".into());
+
     app.run(key);
 }

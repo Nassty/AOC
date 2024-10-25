@@ -1,7 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use aoc_toolkit::{Day, Direction, Grid, Vec2};
-use indicatif::{ProgressBar, ProgressStyle};
 pub struct D14 {}
 
 #[derive(Debug, Clone, PartialEq)]
@@ -74,16 +73,16 @@ impl Day for D14 {
 
     fn part2(&self, data: &str) -> String {
         let total_cycles = 1_000_000_000;
-        let cycle_size = {
+        let res = {
             let mut cycle_size = 0;
             let mut grid = Self::parse(data);
-            let mut hs: HashMap<md5::Digest, (usize, usize)> = HashMap::new();
+            let mut hs: HashMap<String, usize> = HashMap::new();
 
-            for index in 0..=total_cycles {
-                let digest = md5::compute(Self::display(&grid));
-                if let Some((_, idx)) = hs.get(&digest) {
+            for index in 0..=1_000 {
+                let digest = Self::display(&grid);
+                if let Some(idx) = hs.get(&digest) {
                     cycle_size = index - idx;
-                    break;
+                    dbg!(total_cycles % cycle_size);
                 } else {
                     for dir in [
                         Direction::Up,
@@ -93,15 +92,17 @@ impl Day for D14 {
                     ] {
                         Self::tilt(&mut grid, &dir);
                     }
-                    let score = Self::calculate(&grid);
-                    hs.insert(digest, (score, index));
+                    hs.insert(digest.clone(), index);
                 }
             }
             cycle_size
         };
 
-        let final_size = total_cycles % cycle_size;
+        let final_size = total_cycles % res;
         let mut grid = Self::parse(data);
+        dbg!(final_size);
+        dbg!(res);
+
         for _ in 0..final_size {
             for dir in [
                 Direction::Up,
@@ -112,7 +113,6 @@ impl Day for D14 {
                 Self::tilt(&mut grid, &dir);
             }
         }
-        println!("{}", Self::display(&grid));
         Self::calculate(&grid).to_string()
     }
 }
